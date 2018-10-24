@@ -1,0 +1,1083 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/a/RAM8.hdl
+
+/**
+ * Memory of 8 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP personalRAM8 {
+    IN in[16], load, address[3];
+    OUT out[16];
+
+    PARTS:
+    Not(in=load,out=notload);
+    Not(in=address[0],out=notaddress0);
+    Not(in=address[1],out=notaddress1);
+    Not(in=address[2],out=notaddress2);
+
+    
+    And(a=notaddress0,b=notaddress1,out=ndN0N1);
+    And(a=address[0],b=notaddress1,out=nd0N1);
+    And(a=notaddress0,b=address[1],out=ndN01);
+    And(a=address[0],b=address[1],out=nd01);
+
+    And(a=ndN0N1,b=notaddress2,out=add0);
+    And(a=nd0N1,b=notaddress2,out=add1);
+    And(a=ndN01,b=notaddress2,out=add2);
+    And(a=nd01,b=notaddress2,out=add3);
+    And(a=ndN0N1,b=address[2],out=add4);
+    And(a=nd0N1,b=address[2],out=add5);
+    And(a=ndN01,b=address[2],out=add6);
+    And(a=nd01,b=address[2],out=add7);
+
+   
+    And(a=add0,b=load,out=select0);
+    And(a=add1,b=load,out=select1);
+    And(a=add2,b=load,out=select2);
+    And(a=add3,b=load,out=select3);
+    And(a=add4,b=load,out=select4);
+    And(a=add5,b=load,out=select5);
+    And(a=add6,b=load,out=select6);
+    And(a=add7,b=load,out=select7);
+    Not(in=select0,out=notselect0);
+    Not(in=select1,out=notselect1);
+    Not(in=select2,out=notselect2);
+    Not(in=select3,out=notselect3);
+    Not(in=select4,out=notselect4);
+    Not(in=select5,out=notselect5);
+    Not(in=select6,out=notselect6);
+    Not(in=select7,out=notselect7);
+
+    And(a=notselect0,b=out000,out=mux00001);
+    And(a=select0,b=in[0],out=mux00002);
+    Or(a=mux00001,b=mux00002,out=muxout000);
+    DFF(in=muxout000,out=out000);
+    
+    And(a=notselect0,b=out001,out=mux00101);
+    And(a=select0,b=in[1],out=mux00102);
+    Or(a=mux00101,b=mux00102,out=muxout001);
+    DFF(in=muxout001,out=out001);
+    
+    And(a=notselect0,b=out002,out=mux00201);
+    And(a=select0,b=in[2],out=mux00202);
+    Or(a=mux00201,b=mux00202,out=muxout002);
+    DFF(in=muxout002,out=out002);
+    
+    And(a=notselect0,b=out003,out=mux00301);
+    And(a=select0,b=in[3],out=mux00302);
+    Or(a=mux00301,b=mux00302,out=muxout003);
+    DFF(in=muxout003,out=out003);
+    
+    And(a=notselect0,b=out004,out=mux00401);
+    And(a=select0,b=in[4],out=mux00402);
+    Or(a=mux00401,b=mux00402,out=muxout004);
+    DFF(in=muxout004,out=out004);
+    
+    And(a=notselect0,b=out005,out=mux00501);
+    And(a=select0,b=in[5],out=mux00502);
+    Or(a=mux00501,b=mux00502,out=muxout005);
+    DFF(in=muxout005,out=out005);
+    
+    And(a=notselect0,b=out006,out=mux00601);
+    And(a=select0,b=in[6],out=mux00602);
+    Or(a=mux00601,b=mux00602,out=muxout006);
+    DFF(in=muxout006,out=out006);
+    
+    And(a=notselect0,b=out007,out=mux00701);
+    And(a=select0,b=in[7],out=mux00702);
+    Or(a=mux00701,b=mux00702,out=muxout007);
+    DFF(in=muxout007,out=out007);
+    
+    And(a=notselect0,b=out008,out=mux00801);
+    And(a=select0,b=in[8],out=mux00802);
+    Or(a=mux00801,b=mux00802,out=muxout008);
+    DFF(in=muxout008,out=out008);
+    
+    And(a=notselect0,b=out009,out=mux00901);
+    And(a=select0,b=in[9],out=mux00902);
+    Or(a=mux00901,b=mux00902,out=muxout009);
+    DFF(in=muxout009,out=out009);
+    
+    And(a=notselect0,b=out0010,out=mux001001);
+    And(a=select0,b=in[10],out=mux001002);
+    Or(a=mux001001,b=mux001002,out=muxout0010);
+    DFF(in=muxout0010,out=out0010);
+    
+    And(a=notselect0,b=out0011,out=mux001101);
+    And(a=select0,b=in[11],out=mux001102);
+    Or(a=mux001101,b=mux001102,out=muxout0011);
+    DFF(in=muxout0011,out=out0011);
+    
+    And(a=notselect0,b=out0012,out=mux001201);
+    And(a=select0,b=in[12],out=mux001202);
+    Or(a=mux001201,b=mux001202,out=muxout0012);
+    DFF(in=muxout0012,out=out0012);
+    
+    And(a=notselect0,b=out0013,out=mux001301);
+    And(a=select0,b=in[13],out=mux001302);
+    Or(a=mux001301,b=mux001302,out=muxout0013);
+    DFF(in=muxout0013,out=out0013);
+    
+    And(a=notselect0,b=out0014,out=mux001401);
+    And(a=select0,b=in[14],out=mux001402);
+    Or(a=mux001401,b=mux001402,out=muxout0014);
+    DFF(in=muxout0014,out=out0014);
+    
+    And(a=notselect0,b=out0015,out=mux001501);
+    And(a=select0,b=in[15],out=mux001502);
+    Or(a=mux001501,b=mux001502,out=muxout0015);
+    DFF(in=muxout0015,out=out0015);
+    
+    And(a=notselect1,b=out100,out=mux10001);
+    And(a=select1,b=in[0],out=mux10002);
+    Or(a=mux10001,b=mux10002,out=muxout100);
+    DFF(in=muxout100,out=out100);
+    
+    And(a=notselect1,b=out101,out=mux10101);
+    And(a=select1,b=in[1],out=mux10102);
+    Or(a=mux10101,b=mux10102,out=muxout101);
+    DFF(in=muxout101,out=out101);
+    
+    And(a=notselect1,b=out102,out=mux10201);
+    And(a=select1,b=in[2],out=mux10202);
+    Or(a=mux10201,b=mux10202,out=muxout102);
+    DFF(in=muxout102,out=out102);
+    
+    And(a=notselect1,b=out103,out=mux10301);
+    And(a=select1,b=in[3],out=mux10302);
+    Or(a=mux10301,b=mux10302,out=muxout103);
+    DFF(in=muxout103,out=out103);
+    
+    And(a=notselect1,b=out104,out=mux10401);
+    And(a=select1,b=in[4],out=mux10402);
+    Or(a=mux10401,b=mux10402,out=muxout104);
+    DFF(in=muxout104,out=out104);
+    
+    And(a=notselect1,b=out105,out=mux10501);
+    And(a=select1,b=in[5],out=mux10502);
+    Or(a=mux10501,b=mux10502,out=muxout105);
+    DFF(in=muxout105,out=out105);
+    
+    And(a=notselect1,b=out106,out=mux10601);
+    And(a=select1,b=in[6],out=mux10602);
+    Or(a=mux10601,b=mux10602,out=muxout106);
+    DFF(in=muxout106,out=out106);
+    
+    And(a=notselect1,b=out107,out=mux10701);
+    And(a=select1,b=in[7],out=mux10702);
+    Or(a=mux10701,b=mux10702,out=muxout107);
+    DFF(in=muxout107,out=out107);
+    
+    And(a=notselect1,b=out108,out=mux10801);
+    And(a=select1,b=in[8],out=mux10802);
+    Or(a=mux10801,b=mux10802,out=muxout108);
+    DFF(in=muxout108,out=out108);
+    
+    And(a=notselect1,b=out109,out=mux10901);
+    And(a=select1,b=in[9],out=mux10902);
+    Or(a=mux10901,b=mux10902,out=muxout109);
+    DFF(in=muxout109,out=out109);
+    
+    And(a=notselect1,b=out1010,out=mux101001);
+    And(a=select1,b=in[10],out=mux101002);
+    Or(a=mux101001,b=mux101002,out=muxout1010);
+    DFF(in=muxout1010,out=out1010);
+    
+    And(a=notselect1,b=out1011,out=mux101101);
+    And(a=select1,b=in[11],out=mux101102);
+    Or(a=mux101101,b=mux101102,out=muxout1011);
+    DFF(in=muxout1011,out=out1011);
+    
+    And(a=notselect1,b=out1012,out=mux101201);
+    And(a=select1,b=in[12],out=mux101202);
+    Or(a=mux101201,b=mux101202,out=muxout1012);
+    DFF(in=muxout1012,out=out1012);
+    
+    And(a=notselect1,b=out1013,out=mux101301);
+    And(a=select1,b=in[13],out=mux101302);
+    Or(a=mux101301,b=mux101302,out=muxout1013);
+    DFF(in=muxout1013,out=out1013);
+    
+    And(a=notselect1,b=out1014,out=mux101401);
+    And(a=select1,b=in[14],out=mux101402);
+    Or(a=mux101401,b=mux101402,out=muxout1014);
+    DFF(in=muxout1014,out=out1014);
+    
+    And(a=notselect1,b=out1015,out=mux101501);
+    And(a=select1,b=in[15],out=mux101502);
+    Or(a=mux101501,b=mux101502,out=muxout1015);
+    DFF(in=muxout1015,out=out1015);
+    
+    And(a=notselect2,b=out200,out=mux20001);
+    And(a=select2,b=in[0],out=mux20002);
+    Or(a=mux20001,b=mux20002,out=muxout200);
+    DFF(in=muxout200,out=out200);
+    
+    And(a=notselect2,b=out201,out=mux20101);
+    And(a=select2,b=in[1],out=mux20102);
+    Or(a=mux20101,b=mux20102,out=muxout201);
+    DFF(in=muxout201,out=out201);
+    
+    And(a=notselect2,b=out202,out=mux20201);
+    And(a=select2,b=in[2],out=mux20202);
+    Or(a=mux20201,b=mux20202,out=muxout202);
+    DFF(in=muxout202,out=out202);
+    
+    And(a=notselect2,b=out203,out=mux20301);
+    And(a=select2,b=in[3],out=mux20302);
+    Or(a=mux20301,b=mux20302,out=muxout203);
+    DFF(in=muxout203,out=out203);
+    
+    And(a=notselect2,b=out204,out=mux20401);
+    And(a=select2,b=in[4],out=mux20402);
+    Or(a=mux20401,b=mux20402,out=muxout204);
+    DFF(in=muxout204,out=out204);
+    
+    And(a=notselect2,b=out205,out=mux20501);
+    And(a=select2,b=in[5],out=mux20502);
+    Or(a=mux20501,b=mux20502,out=muxout205);
+    DFF(in=muxout205,out=out205);
+    
+    And(a=notselect2,b=out206,out=mux20601);
+    And(a=select2,b=in[6],out=mux20602);
+    Or(a=mux20601,b=mux20602,out=muxout206);
+    DFF(in=muxout206,out=out206);
+    
+    And(a=notselect2,b=out207,out=mux20701);
+    And(a=select2,b=in[7],out=mux20702);
+    Or(a=mux20701,b=mux20702,out=muxout207);
+    DFF(in=muxout207,out=out207);
+    
+    And(a=notselect2,b=out208,out=mux20801);
+    And(a=select2,b=in[8],out=mux20802);
+    Or(a=mux20801,b=mux20802,out=muxout208);
+    DFF(in=muxout208,out=out208);
+    
+    And(a=notselect2,b=out209,out=mux20901);
+    And(a=select2,b=in[9],out=mux20902);
+    Or(a=mux20901,b=mux20902,out=muxout209);
+    DFF(in=muxout209,out=out209);
+    
+    And(a=notselect2,b=out2010,out=mux201001);
+    And(a=select2,b=in[10],out=mux201002);
+    Or(a=mux201001,b=mux201002,out=muxout2010);
+    DFF(in=muxout2010,out=out2010);
+    
+    And(a=notselect2,b=out2011,out=mux201101);
+    And(a=select2,b=in[11],out=mux201102);
+    Or(a=mux201101,b=mux201102,out=muxout2011);
+    DFF(in=muxout2011,out=out2011);
+    
+    And(a=notselect2,b=out2012,out=mux201201);
+    And(a=select2,b=in[12],out=mux201202);
+    Or(a=mux201201,b=mux201202,out=muxout2012);
+    DFF(in=muxout2012,out=out2012);
+    
+    And(a=notselect2,b=out2013,out=mux201301);
+    And(a=select2,b=in[13],out=mux201302);
+    Or(a=mux201301,b=mux201302,out=muxout2013);
+    DFF(in=muxout2013,out=out2013);
+    
+    And(a=notselect2,b=out2014,out=mux201401);
+    And(a=select2,b=in[14],out=mux201402);
+    Or(a=mux201401,b=mux201402,out=muxout2014);
+    DFF(in=muxout2014,out=out2014);
+    
+    And(a=notselect2,b=out2015,out=mux201501);
+    And(a=select2,b=in[15],out=mux201502);
+    Or(a=mux201501,b=mux201502,out=muxout2015);
+    DFF(in=muxout2015,out=out2015);
+    
+    And(a=notselect3,b=out300,out=mux30001);
+    And(a=select3,b=in[0],out=mux30002);
+    Or(a=mux30001,b=mux30002,out=muxout300);
+    DFF(in=muxout300,out=out300);
+    
+    And(a=notselect3,b=out301,out=mux30101);
+    And(a=select3,b=in[1],out=mux30102);
+    Or(a=mux30101,b=mux30102,out=muxout301);
+    DFF(in=muxout301,out=out301);
+    
+    And(a=notselect3,b=out302,out=mux30201);
+    And(a=select3,b=in[2],out=mux30202);
+    Or(a=mux30201,b=mux30202,out=muxout302);
+    DFF(in=muxout302,out=out302);
+    
+    And(a=notselect3,b=out303,out=mux30301);
+    And(a=select3,b=in[3],out=mux30302);
+    Or(a=mux30301,b=mux30302,out=muxout303);
+    DFF(in=muxout303,out=out303);
+    
+    And(a=notselect3,b=out304,out=mux30401);
+    And(a=select3,b=in[4],out=mux30402);
+    Or(a=mux30401,b=mux30402,out=muxout304);
+    DFF(in=muxout304,out=out304);
+    
+    And(a=notselect3,b=out305,out=mux30501);
+    And(a=select3,b=in[5],out=mux30502);
+    Or(a=mux30501,b=mux30502,out=muxout305);
+    DFF(in=muxout305,out=out305);
+    
+    And(a=notselect3,b=out306,out=mux30601);
+    And(a=select3,b=in[6],out=mux30602);
+    Or(a=mux30601,b=mux30602,out=muxout306);
+    DFF(in=muxout306,out=out306);
+    
+    And(a=notselect3,b=out307,out=mux30701);
+    And(a=select3,b=in[7],out=mux30702);
+    Or(a=mux30701,b=mux30702,out=muxout307);
+    DFF(in=muxout307,out=out307);
+    
+    And(a=notselect3,b=out308,out=mux30801);
+    And(a=select3,b=in[8],out=mux30802);
+    Or(a=mux30801,b=mux30802,out=muxout308);
+    DFF(in=muxout308,out=out308);
+    
+    And(a=notselect3,b=out309,out=mux30901);
+    And(a=select3,b=in[9],out=mux30902);
+    Or(a=mux30901,b=mux30902,out=muxout309);
+    DFF(in=muxout309,out=out309);
+    
+    And(a=notselect3,b=out3010,out=mux301001);
+    And(a=select3,b=in[10],out=mux301002);
+    Or(a=mux301001,b=mux301002,out=muxout3010);
+    DFF(in=muxout3010,out=out3010);
+    
+    And(a=notselect3,b=out3011,out=mux301101);
+    And(a=select3,b=in[11],out=mux301102);
+    Or(a=mux301101,b=mux301102,out=muxout3011);
+    DFF(in=muxout3011,out=out3011);
+    
+    And(a=notselect3,b=out3012,out=mux301201);
+    And(a=select3,b=in[12],out=mux301202);
+    Or(a=mux301201,b=mux301202,out=muxout3012);
+    DFF(in=muxout3012,out=out3012);
+    
+    And(a=notselect3,b=out3013,out=mux301301);
+    And(a=select3,b=in[13],out=mux301302);
+    Or(a=mux301301,b=mux301302,out=muxout3013);
+    DFF(in=muxout3013,out=out3013);
+    
+    And(a=notselect3,b=out3014,out=mux301401);
+    And(a=select3,b=in[14],out=mux301402);
+    Or(a=mux301401,b=mux301402,out=muxout3014);
+    DFF(in=muxout3014,out=out3014);
+    
+    And(a=notselect3,b=out3015,out=mux301501);
+    And(a=select3,b=in[15],out=mux301502);
+    Or(a=mux301501,b=mux301502,out=muxout3015);
+    DFF(in=muxout3015,out=out3015);
+    
+    And(a=notselect4,b=out400,out=mux40001);
+    And(a=select4,b=in[0],out=mux40002);
+    Or(a=mux40001,b=mux40002,out=muxout400);
+    DFF(in=muxout400,out=out400);
+    
+    And(a=notselect4,b=out401,out=mux40101);
+    And(a=select4,b=in[1],out=mux40102);
+    Or(a=mux40101,b=mux40102,out=muxout401);
+    DFF(in=muxout401,out=out401);
+    
+    And(a=notselect4,b=out402,out=mux40201);
+    And(a=select4,b=in[2],out=mux40202);
+    Or(a=mux40201,b=mux40202,out=muxout402);
+    DFF(in=muxout402,out=out402);
+    
+    And(a=notselect4,b=out403,out=mux40301);
+    And(a=select4,b=in[3],out=mux40302);
+    Or(a=mux40301,b=mux40302,out=muxout403);
+    DFF(in=muxout403,out=out403);
+    
+    And(a=notselect4,b=out404,out=mux40401);
+    And(a=select4,b=in[4],out=mux40402);
+    Or(a=mux40401,b=mux40402,out=muxout404);
+    DFF(in=muxout404,out=out404);
+    
+    And(a=notselect4,b=out405,out=mux40501);
+    And(a=select4,b=in[5],out=mux40502);
+    Or(a=mux40501,b=mux40502,out=muxout405);
+    DFF(in=muxout405,out=out405);
+    
+    And(a=notselect4,b=out406,out=mux40601);
+    And(a=select4,b=in[6],out=mux40602);
+    Or(a=mux40601,b=mux40602,out=muxout406);
+    DFF(in=muxout406,out=out406);
+    
+    And(a=notselect4,b=out407,out=mux40701);
+    And(a=select4,b=in[7],out=mux40702);
+    Or(a=mux40701,b=mux40702,out=muxout407);
+    DFF(in=muxout407,out=out407);
+    
+    And(a=notselect4,b=out408,out=mux40801);
+    And(a=select4,b=in[8],out=mux40802);
+    Or(a=mux40801,b=mux40802,out=muxout408);
+    DFF(in=muxout408,out=out408);
+    
+    And(a=notselect4,b=out409,out=mux40901);
+    And(a=select4,b=in[9],out=mux40902);
+    Or(a=mux40901,b=mux40902,out=muxout409);
+    DFF(in=muxout409,out=out409);
+    
+    And(a=notselect4,b=out4010,out=mux401001);
+    And(a=select4,b=in[10],out=mux401002);
+    Or(a=mux401001,b=mux401002,out=muxout4010);
+    DFF(in=muxout4010,out=out4010);
+    
+    And(a=notselect4,b=out4011,out=mux401101);
+    And(a=select4,b=in[11],out=mux401102);
+    Or(a=mux401101,b=mux401102,out=muxout4011);
+    DFF(in=muxout4011,out=out4011);
+    
+    And(a=notselect4,b=out4012,out=mux401201);
+    And(a=select4,b=in[12],out=mux401202);
+    Or(a=mux401201,b=mux401202,out=muxout4012);
+    DFF(in=muxout4012,out=out4012);
+    
+    And(a=notselect4,b=out4013,out=mux401301);
+    And(a=select4,b=in[13],out=mux401302);
+    Or(a=mux401301,b=mux401302,out=muxout4013);
+    DFF(in=muxout4013,out=out4013);
+    
+    And(a=notselect4,b=out4014,out=mux401401);
+    And(a=select4,b=in[14],out=mux401402);
+    Or(a=mux401401,b=mux401402,out=muxout4014);
+    DFF(in=muxout4014,out=out4014);
+    
+    And(a=notselect4,b=out4015,out=mux401501);
+    And(a=select4,b=in[15],out=mux401502);
+    Or(a=mux401501,b=mux401502,out=muxout4015);
+    DFF(in=muxout4015,out=out4015);
+    
+    And(a=notselect5,b=out500,out=mux50001);
+    And(a=select5,b=in[0],out=mux50002);
+    Or(a=mux50001,b=mux50002,out=muxout500);
+    DFF(in=muxout500,out=out500);
+    
+    And(a=notselect5,b=out501,out=mux50101);
+    And(a=select5,b=in[1],out=mux50102);
+    Or(a=mux50101,b=mux50102,out=muxout501);
+    DFF(in=muxout501,out=out501);
+    
+    And(a=notselect5,b=out502,out=mux50201);
+    And(a=select5,b=in[2],out=mux50202);
+    Or(a=mux50201,b=mux50202,out=muxout502);
+    DFF(in=muxout502,out=out502);
+    
+    And(a=notselect5,b=out503,out=mux50301);
+    And(a=select5,b=in[3],out=mux50302);
+    Or(a=mux50301,b=mux50302,out=muxout503);
+    DFF(in=muxout503,out=out503);
+    
+    And(a=notselect5,b=out504,out=mux50401);
+    And(a=select5,b=in[4],out=mux50402);
+    Or(a=mux50401,b=mux50402,out=muxout504);
+    DFF(in=muxout504,out=out504);
+    
+    And(a=notselect5,b=out505,out=mux50501);
+    And(a=select5,b=in[5],out=mux50502);
+    Or(a=mux50501,b=mux50502,out=muxout505);
+    DFF(in=muxout505,out=out505);
+    
+    And(a=notselect5,b=out506,out=mux50601);
+    And(a=select5,b=in[6],out=mux50602);
+    Or(a=mux50601,b=mux50602,out=muxout506);
+    DFF(in=muxout506,out=out506);
+    
+    And(a=notselect5,b=out507,out=mux50701);
+    And(a=select5,b=in[7],out=mux50702);
+    Or(a=mux50701,b=mux50702,out=muxout507);
+    DFF(in=muxout507,out=out507);
+    
+    And(a=notselect5,b=out508,out=mux50801);
+    And(a=select5,b=in[8],out=mux50802);
+    Or(a=mux50801,b=mux50802,out=muxout508);
+    DFF(in=muxout508,out=out508);
+    
+    And(a=notselect5,b=out509,out=mux50901);
+    And(a=select5,b=in[9],out=mux50902);
+    Or(a=mux50901,b=mux50902,out=muxout509);
+    DFF(in=muxout509,out=out509);
+    
+    And(a=notselect5,b=out5010,out=mux501001);
+    And(a=select5,b=in[10],out=mux501002);
+    Or(a=mux501001,b=mux501002,out=muxout5010);
+    DFF(in=muxout5010,out=out5010);
+    
+    And(a=notselect5,b=out5011,out=mux501101);
+    And(a=select5,b=in[11],out=mux501102);
+    Or(a=mux501101,b=mux501102,out=muxout5011);
+    DFF(in=muxout5011,out=out5011);
+    
+    And(a=notselect5,b=out5012,out=mux501201);
+    And(a=select5,b=in[12],out=mux501202);
+    Or(a=mux501201,b=mux501202,out=muxout5012);
+    DFF(in=muxout5012,out=out5012);
+    
+    And(a=notselect5,b=out5013,out=mux501301);
+    And(a=select5,b=in[13],out=mux501302);
+    Or(a=mux501301,b=mux501302,out=muxout5013);
+    DFF(in=muxout5013,out=out5013);
+    
+    And(a=notselect5,b=out5014,out=mux501401);
+    And(a=select5,b=in[14],out=mux501402);
+    Or(a=mux501401,b=mux501402,out=muxout5014);
+    DFF(in=muxout5014,out=out5014);
+    
+    And(a=notselect5,b=out5015,out=mux501501);
+    And(a=select5,b=in[15],out=mux501502);
+    Or(a=mux501501,b=mux501502,out=muxout5015);
+    DFF(in=muxout5015,out=out5015);
+    
+    And(a=notselect6,b=out600,out=mux60001);
+    And(a=select6,b=in[0],out=mux60002);
+    Or(a=mux60001,b=mux60002,out=muxout600);
+    DFF(in=muxout600,out=out600);
+    
+    And(a=notselect6,b=out601,out=mux60101);
+    And(a=select6,b=in[1],out=mux60102);
+    Or(a=mux60101,b=mux60102,out=muxout601);
+    DFF(in=muxout601,out=out601);
+    
+    And(a=notselect6,b=out602,out=mux60201);
+    And(a=select6,b=in[2],out=mux60202);
+    Or(a=mux60201,b=mux60202,out=muxout602);
+    DFF(in=muxout602,out=out602);
+    
+    And(a=notselect6,b=out603,out=mux60301);
+    And(a=select6,b=in[3],out=mux60302);
+    Or(a=mux60301,b=mux60302,out=muxout603);
+    DFF(in=muxout603,out=out603);
+    
+    And(a=notselect6,b=out604,out=mux60401);
+    And(a=select6,b=in[4],out=mux60402);
+    Or(a=mux60401,b=mux60402,out=muxout604);
+    DFF(in=muxout604,out=out604);
+    
+    And(a=notselect6,b=out605,out=mux60501);
+    And(a=select6,b=in[5],out=mux60502);
+    Or(a=mux60501,b=mux60502,out=muxout605);
+    DFF(in=muxout605,out=out605);
+    
+    And(a=notselect6,b=out606,out=mux60601);
+    And(a=select6,b=in[6],out=mux60602);
+    Or(a=mux60601,b=mux60602,out=muxout606);
+    DFF(in=muxout606,out=out606);
+    
+    And(a=notselect6,b=out607,out=mux60701);
+    And(a=select6,b=in[7],out=mux60702);
+    Or(a=mux60701,b=mux60702,out=muxout607);
+    DFF(in=muxout607,out=out607);
+    
+    And(a=notselect6,b=out608,out=mux60801);
+    And(a=select6,b=in[8],out=mux60802);
+    Or(a=mux60801,b=mux60802,out=muxout608);
+    DFF(in=muxout608,out=out608);
+    
+    And(a=notselect6,b=out609,out=mux60901);
+    And(a=select6,b=in[9],out=mux60902);
+    Or(a=mux60901,b=mux60902,out=muxout609);
+    DFF(in=muxout609,out=out609);
+    
+    And(a=notselect6,b=out6010,out=mux601001);
+    And(a=select6,b=in[10],out=mux601002);
+    Or(a=mux601001,b=mux601002,out=muxout6010);
+    DFF(in=muxout6010,out=out6010);
+    
+    And(a=notselect6,b=out6011,out=mux601101);
+    And(a=select6,b=in[11],out=mux601102);
+    Or(a=mux601101,b=mux601102,out=muxout6011);
+    DFF(in=muxout6011,out=out6011);
+    
+    And(a=notselect6,b=out6012,out=mux601201);
+    And(a=select6,b=in[12],out=mux601202);
+    Or(a=mux601201,b=mux601202,out=muxout6012);
+    DFF(in=muxout6012,out=out6012);
+    
+    And(a=notselect6,b=out6013,out=mux601301);
+    And(a=select6,b=in[13],out=mux601302);
+    Or(a=mux601301,b=mux601302,out=muxout6013);
+    DFF(in=muxout6013,out=out6013);
+    
+    And(a=notselect6,b=out6014,out=mux601401);
+    And(a=select6,b=in[14],out=mux601402);
+    Or(a=mux601401,b=mux601402,out=muxout6014);
+    DFF(in=muxout6014,out=out6014);
+    
+    And(a=notselect6,b=out6015,out=mux601501);
+    And(a=select6,b=in[15],out=mux601502);
+    Or(a=mux601501,b=mux601502,out=muxout6015);
+    DFF(in=muxout6015,out=out6015);
+    
+    And(a=notselect7,b=out700,out=mux70001);
+    And(a=select7,b=in[0],out=mux70002);
+    Or(a=mux70001,b=mux70002,out=muxout700);
+    DFF(in=muxout700,out=out700);
+    
+    And(a=notselect7,b=out701,out=mux70101);
+    And(a=select7,b=in[1],out=mux70102);
+    Or(a=mux70101,b=mux70102,out=muxout701);
+    DFF(in=muxout701,out=out701);
+    
+    And(a=notselect7,b=out702,out=mux70201);
+    And(a=select7,b=in[2],out=mux70202);
+    Or(a=mux70201,b=mux70202,out=muxout702);
+    DFF(in=muxout702,out=out702);
+   
+    And(a=notselect7,b=out703,out=mux70301);
+    And(a=select7,b=in[3],out=mux70302);
+    Or(a=mux70301,b=mux70302,out=muxout703);
+    DFF(in=muxout703,out=out703);
+    
+    And(a=notselect7,b=out704,out=mux70401);
+    And(a=select7,b=in[4],out=mux70402);
+    Or(a=mux70401,b=mux70402,out=muxout704);
+    DFF(in=muxout704,out=out704);
+    
+    And(a=notselect7,b=out705,out=mux70501);
+    And(a=select7,b=in[5],out=mux70502);
+    Or(a=mux70501,b=mux70502,out=muxout705);
+    DFF(in=muxout705,out=out705);
+    
+    And(a=notselect7,b=out706,out=mux70601);
+    And(a=select7,b=in[6],out=mux70602);
+    Or(a=mux70601,b=mux70602,out=muxout706);
+    DFF(in=muxout706,out=out706);
+    
+    And(a=notselect7,b=out707,out=mux70701);
+    And(a=select7,b=in[7],out=mux70702);
+    Or(a=mux70701,b=mux70702,out=muxout707);
+    DFF(in=muxout707,out=out707);
+    
+    And(a=notselect7,b=out708,out=mux70801);
+    And(a=select7,b=in[8],out=mux70802);
+    Or(a=mux70801,b=mux70802,out=muxout708);
+    DFF(in=muxout708,out=out708);
+    
+    And(a=notselect7,b=out709,out=mux70901);
+    And(a=select7,b=in[9],out=mux70902);
+    Or(a=mux70901,b=mux70902,out=muxout709);
+    DFF(in=muxout709,out=out709);
+    
+    And(a=notselect7,b=out7010,out=mux701001);
+    And(a=select7,b=in[10],out=mux701002);
+    Or(a=mux701001,b=mux701002,out=muxout7010);
+    DFF(in=muxout7010,out=out7010);
+    
+    And(a=notselect7,b=out7011,out=mux701101);
+    And(a=select7,b=in[11],out=mux701102);
+    Or(a=mux701101,b=mux701102,out=muxout7011);
+    DFF(in=muxout7011,out=out7011);
+    
+    And(a=notselect7,b=out7012,out=mux701201);
+    And(a=select7,b=in[12],out=mux701202);
+    Or(a=mux701201,b=mux701202,out=muxout7012);
+    DFF(in=muxout7012,out=out7012);
+    
+    And(a=notselect7,b=out7013,out=mux701301);
+    And(a=select7,b=in[13],out=mux701302);
+    Or(a=mux701301,b=mux701302,out=muxout7013);
+    DFF(in=muxout7013,out=out7013);
+    
+    And(a=notselect7,b=out7014,out=mux701401);
+    And(a=select7,b=in[14],out=mux701402);
+    Or(a=mux701401,b=mux701402,out=muxout7014);
+    DFF(in=muxout7014,out=out7014);
+    
+    And(a=notselect7,b=out7015,out=mux701501);
+    And(a=select7,b=in[15],out=mux701502);
+    Or(a=mux701501,b=mux701502,out=muxout7015);
+    DFF(in=muxout7015,out=out7015);
+    
+
+ 
+
+    And(a=notaddress0,b=out000,out=and000);
+    And(a=address[0],b=out100,out=and001);
+    And(a=notaddress0,b=out200,out=and002);
+    And(a=address[0],b=out300,out=and003);
+    Or(a=and000,b=and001,out=or001);
+    Or(a=and002,b=and003,out=or002);
+    And(a=notaddress1,b=or001,out=x001);
+    And(a=address[1],b=or002,out=x002);
+    Or(a=x001,b=x002,out=y01);
+
+    And(a=notaddress0,b=out400,out=and004);
+    And(a=address[0],b=out500,out=and005);
+    And(a=notaddress0,b=out600,out=and006);
+    And(a=address[0],b=out700,out=and007);
+    Or(a=and004,b=and005,out=or003);
+    Or(a=and006,b=and007,out=or004);
+    And(a=notaddress1,b=or003,out=x003);
+    And(a=address[1],b=or004,out=x004);
+    Or(a=x003,b=x004,out=y02);
+
+    Nand(a=notaddress2,b=y01,out=nand01);
+    Nand(a=address[2],b=y02,out=nand02);
+    Nand(a=nand01,b=nand02,out=out[0]);
+    
+    And(a=notaddress0,b=out001,out=and100);
+    And(a=address[0],b=out101,out=and101);
+    And(a=notaddress0,b=out201,out=and102);
+    And(a=address[0],b=out301,out=and103);
+    Or(a=and100,b=and101,out=or101);
+    Or(a=and102,b=and103,out=or102);
+    And(a=notaddress1,b=or101,out=x101);
+    And(a=address[1],b=or102,out=x102);
+    Or(a=x101,b=x102,out=y11);
+
+    And(a=notaddress0,b=out401,out=and104);
+    And(a=address[0],b=out501,out=and105);
+    And(a=notaddress0,b=out601,out=and106);
+    And(a=address[0],b=out701,out=and107);
+    Or(a=and104,b=and105,out=or103);
+    Or(a=and106,b=and107,out=or104);
+    And(a=notaddress1,b=or103,out=x103);
+    And(a=address[1],b=or104,out=x104);
+    Or(a=x103,b=x104,out=y12);
+
+    Nand(a=notaddress2,b=y11,out=nand11);
+    Nand(a=address[2],b=y12,out=nand12);
+    Nand(a=nand11,b=nand12,out=out[1]);
+    
+    And(a=notaddress0,b=out002,out=and200);
+    And(a=address[0],b=out102,out=and201);
+    And(a=notaddress0,b=out202,out=and202);
+    And(a=address[0],b=out302,out=and203);
+    Or(a=and200,b=and201,out=or201);
+    Or(a=and202,b=and203,out=or202);
+    And(a=notaddress1,b=or201,out=x201);
+    And(a=address[1],b=or202,out=x202);
+    Or(a=x201,b=x202,out=y21);
+
+    And(a=notaddress0,b=out402,out=and204);
+    And(a=address[0],b=out502,out=and205);
+    And(a=notaddress0,b=out602,out=and206);
+    And(a=address[0],b=out702,out=and207);
+    Or(a=and204,b=and205,out=or203);
+    Or(a=and206,b=and207,out=or204);
+    And(a=notaddress1,b=or203,out=x203);
+    And(a=address[1],b=or204,out=x204);
+    Or(a=x203,b=x204,out=y22);
+
+    Nand(a=notaddress2,b=y21,out=nand21);
+    Nand(a=address[2],b=y22,out=nand22);
+    Nand(a=nand21,b=nand22,out=out[2]);
+    
+    And(a=notaddress0,b=out003,out=and300);
+    And(a=address[0],b=out103,out=and301);
+    And(a=notaddress0,b=out203,out=and302);
+    And(a=address[0],b=out303,out=and303);
+    Or(a=and300,b=and301,out=or301);
+    Or(a=and302,b=and303,out=or302);
+    And(a=notaddress1,b=or301,out=x301);
+    And(a=address[1],b=or302,out=x302);
+    Or(a=x301,b=x302,out=y31);
+
+    And(a=notaddress0,b=out403,out=and304);
+    And(a=address[0],b=out503,out=and305);
+    And(a=notaddress0,b=out603,out=and306);
+    And(a=address[0],b=out703,out=and307);
+    Or(a=and304,b=and305,out=or303);
+    Or(a=and306,b=and307,out=or304);
+    And(a=notaddress1,b=or303,out=x303);
+    And(a=address[1],b=or304,out=x304);
+    Or(a=x303,b=x304,out=y32);
+
+    Nand(a=notaddress2,b=y31,out=nand31);
+    Nand(a=address[2],b=y32,out=nand32);
+    Nand(a=nand31,b=nand32,out=out[3]);
+    
+    And(a=notaddress0,b=out004,out=and400);
+    And(a=address[0],b=out104,out=and401);
+    And(a=notaddress0,b=out204,out=and402);
+    And(a=address[0],b=out304,out=and403);
+    Or(a=and400,b=and401,out=or401);
+    Or(a=and402,b=and403,out=or402);
+    And(a=notaddress1,b=or401,out=x401);
+    And(a=address[1],b=or402,out=x402);
+    Or(a=x401,b=x402,out=y41);
+
+    And(a=notaddress0,b=out404,out=and404);
+    And(a=address[0],b=out504,out=and405);
+    And(a=notaddress0,b=out604,out=and406);
+    And(a=address[0],b=out704,out=and407);
+    Or(a=and404,b=and405,out=or403);
+    Or(a=and406,b=and407,out=or404);
+    And(a=notaddress1,b=or403,out=x403);
+    And(a=address[1],b=or404,out=x404);
+    Or(a=x403,b=x404,out=y42);
+
+    Nand(a=notaddress2,b=y41,out=nand41);
+    Nand(a=address[2],b=y42,out=nand42);
+    Nand(a=nand41,b=nand42,out=out[4]);
+    
+    And(a=notaddress0,b=out005,out=and500);
+    And(a=address[0],b=out105,out=and501);
+    And(a=notaddress0,b=out205,out=and502);
+    And(a=address[0],b=out305,out=and503);
+    Or(a=and500,b=and501,out=or501);
+    Or(a=and502,b=and503,out=or502);
+    And(a=notaddress1,b=or501,out=x501);
+    And(a=address[1],b=or502,out=x502);
+    Or(a=x501,b=x502,out=y51);
+
+    And(a=notaddress0,b=out405,out=and504);
+    And(a=address[0],b=out505,out=and505);
+    And(a=notaddress0,b=out605,out=and506);
+    And(a=address[0],b=out705,out=and507);
+    Or(a=and504,b=and505,out=or503);
+    Or(a=and506,b=and507,out=or504);
+    And(a=notaddress1,b=or503,out=x503);
+    And(a=address[1],b=or504,out=x504);
+    Or(a=x503,b=x504,out=y52);
+
+    Nand(a=notaddress2,b=y51,out=nand51);
+    Nand(a=address[2],b=y52,out=nand52);
+    Nand(a=nand51,b=nand52,out=out[5]);
+    
+    And(a=notaddress0,b=out006,out=and600);
+    And(a=address[0],b=out106,out=and601);
+    And(a=notaddress0,b=out206,out=and602);
+    And(a=address[0],b=out306,out=and603);
+    Or(a=and600,b=and601,out=or601);
+    Or(a=and602,b=and603,out=or602);
+    And(a=notaddress1,b=or601,out=x601);
+    And(a=address[1],b=or602,out=x602);
+    Or(a=x601,b=x602,out=y61);
+
+    And(a=notaddress0,b=out406,out=and604);
+    And(a=address[0],b=out506,out=and605);
+    And(a=notaddress0,b=out606,out=and606);
+    And(a=address[0],b=out706,out=and607);
+    Or(a=and604,b=and605,out=or603);
+    Or(a=and606,b=and607,out=or604);
+    And(a=notaddress1,b=or603,out=x603);
+    And(a=address[1],b=or604,out=x604);
+    Or(a=x603,b=x604,out=y62);
+
+    Nand(a=notaddress2,b=y61,out=nand61);
+    Nand(a=address[2],b=y62,out=nand62);
+    Nand(a=nand61,b=nand62,out=out[6]);
+    
+    And(a=notaddress0,b=out007,out=and700);
+    And(a=address[0],b=out107,out=and701);
+    And(a=notaddress0,b=out207,out=and702);
+    And(a=address[0],b=out307,out=and703);
+    Or(a=and700,b=and701,out=or701);
+    Or(a=and702,b=and703,out=or702);
+    And(a=notaddress1,b=or701,out=x701);
+    And(a=address[1],b=or702,out=x702);
+    Or(a=x701,b=x702,out=y71);
+
+    And(a=notaddress0,b=out407,out=and704);
+    And(a=address[0],b=out507,out=and705);
+    And(a=notaddress0,b=out607,out=and706);
+    And(a=address[0],b=out707,out=and707);
+    Or(a=and704,b=and705,out=or703);
+    Or(a=and706,b=and707,out=or704);
+    And(a=notaddress1,b=or703,out=x703);
+    And(a=address[1],b=or704,out=x704);
+    Or(a=x703,b=x704,out=y72);
+
+    Nand(a=notaddress2,b=y71,out=nand71);
+    Nand(a=address[2],b=y72,out=nand72);
+    Nand(a=nand71,b=nand72,out=out[7]);
+    
+    And(a=notaddress0,b=out008,out=and800);
+    And(a=address[0],b=out108,out=and801);
+    And(a=notaddress0,b=out208,out=and802);
+    And(a=address[0],b=out308,out=and803);
+    Or(a=and800,b=and801,out=or801);
+    Or(a=and802,b=and803,out=or802);
+    And(a=notaddress1,b=or801,out=x801);
+    And(a=address[1],b=or802,out=x802);
+    Or(a=x801,b=x802,out=y81);
+
+    And(a=notaddress0,b=out408,out=and804);
+    And(a=address[0],b=out508,out=and805);
+    And(a=notaddress0,b=out608,out=and806);
+    And(a=address[0],b=out708,out=and807);
+    Or(a=and804,b=and805,out=or803);
+    Or(a=and806,b=and807,out=or804);
+    And(a=notaddress1,b=or803,out=x803);
+    And(a=address[1],b=or804,out=x804);
+    Or(a=x803,b=x804,out=y82);
+
+    Nand(a=notaddress2,b=y81,out=nand81);
+    Nand(a=address[2],b=y82,out=nand82);
+    Nand(a=nand81,b=nand82,out=out[8]);
+    
+    And(a=notaddress0,b=out009,out=and900);
+    And(a=address[0],b=out109,out=and901);
+    And(a=notaddress0,b=out209,out=and902);
+    And(a=address[0],b=out309,out=and903);
+    Or(a=and900,b=and901,out=or901);
+    Or(a=and902,b=and903,out=or902);
+    And(a=notaddress1,b=or901,out=x901);
+    And(a=address[1],b=or902,out=x902);
+    Or(a=x901,b=x902,out=y91);
+
+    And(a=notaddress0,b=out409,out=and904);
+    And(a=address[0],b=out509,out=and905);
+    And(a=notaddress0,b=out609,out=and906);
+    And(a=address[0],b=out709,out=and907);
+    Or(a=and904,b=and905,out=or903);
+    Or(a=and906,b=and907,out=or904);
+    And(a=notaddress1,b=or903,out=x903);
+    And(a=address[1],b=or904,out=x904);
+    Or(a=x903,b=x904,out=y92);
+
+    Nand(a=notaddress2,b=y91,out=nand91);
+    Nand(a=address[2],b=y92,out=nand92);
+    Nand(a=nand91,b=nand92,out=out[9]);
+    
+    And(a=notaddress0,b=out0010,out=and1000);
+    And(a=address[0],b=out1010,out=and1001);
+    And(a=notaddress0,b=out2010,out=and1002);
+    And(a=address[0],b=out3010,out=and1003);
+    Or(a=and1000,b=and1001,out=or1001);
+    Or(a=and1002,b=and1003,out=or1002);
+    And(a=notaddress1,b=or1001,out=x1001);
+    And(a=address[1],b=or1002,out=x1002);
+    Or(a=x1001,b=x1002,out=y101);
+
+    And(a=notaddress0,b=out4010,out=and1004);
+    And(a=address[0],b=out5010,out=and1005);
+    And(a=notaddress0,b=out6010,out=and1006);
+    And(a=address[0],b=out7010,out=and1007);
+    Or(a=and1004,b=and1005,out=or1003);
+    Or(a=and1006,b=and1007,out=or1004);
+    And(a=notaddress1,b=or1003,out=x1003);
+    And(a=address[1],b=or1004,out=x1004);
+    Or(a=x1003,b=x1004,out=y102);
+
+    Nand(a=notaddress2,b=y101,out=nand101);
+    Nand(a=address[2],b=y102,out=nand102);
+    Nand(a=nand101,b=nand102,out=out[10]);
+    
+    And(a=notaddress0,b=out0011,out=and1100);
+    And(a=address[0],b=out1011,out=and1101);
+    And(a=notaddress0,b=out2011,out=and1102);
+    And(a=address[0],b=out3011,out=and1103);
+    Or(a=and1100,b=and1101,out=or1101);
+    Or(a=and1102,b=and1103,out=or1102);
+    And(a=notaddress1,b=or1101,out=x1101);
+    And(a=address[1],b=or1102,out=x1102);
+    Or(a=x1101,b=x1102,out=y111);
+
+    And(a=notaddress0,b=out4011,out=and1104);
+    And(a=address[0],b=out5011,out=and1105);
+    And(a=notaddress0,b=out6011,out=and1106);
+    And(a=address[0],b=out7011,out=and1107);
+    Or(a=and1104,b=and1105,out=or1103);
+    Or(a=and1106,b=and1107,out=or1104);
+    And(a=notaddress1,b=or1103,out=x1103);
+    And(a=address[1],b=or1104,out=x1104);
+    Or(a=x1103,b=x1104,out=y112);
+
+    Nand(a=notaddress2,b=y111,out=nand111);
+    Nand(a=address[2],b=y112,out=nand112);
+    Nand(a=nand111,b=nand112,out=out[11]);
+    
+    And(a=notaddress0,b=out0012,out=and1200);
+    And(a=address[0],b=out1012,out=and1201);
+    And(a=notaddress0,b=out2012,out=and1202);
+    And(a=address[0],b=out3012,out=and1203);
+    Or(a=and1200,b=and1201,out=or1201);
+    Or(a=and1202,b=and1203,out=or1202);
+    And(a=notaddress1,b=or1201,out=x1201);
+    And(a=address[1],b=or1202,out=x1202);
+    Or(a=x1201,b=x1202,out=y121);
+
+    And(a=notaddress0,b=out4012,out=and1204);
+    And(a=address[0],b=out5012,out=and1205);
+    And(a=notaddress0,b=out6012,out=and1206);
+    And(a=address[0],b=out7012,out=and1207);
+    Or(a=and1204,b=and1205,out=or1203);
+    Or(a=and1206,b=and1207,out=or1204);
+    And(a=notaddress1,b=or1203,out=x1203);
+    And(a=address[1],b=or1204,out=x1204);
+    Or(a=x1203,b=x1204,out=y122);
+
+    Nand(a=notaddress2,b=y121,out=nand121);
+    Nand(a=address[2],b=y122,out=nand122);
+    Nand(a=nand121,b=nand122,out=out[12]);
+    
+    And(a=notaddress0,b=out0013,out=and1300);
+    And(a=address[0],b=out1013,out=and1301);
+    And(a=notaddress0,b=out2013,out=and1302);
+    And(a=address[0],b=out3013,out=and1303);
+    Or(a=and1300,b=and1301,out=or1301);
+    Or(a=and1302,b=and1303,out=or1302);
+    And(a=notaddress1,b=or1301,out=x1301);
+    And(a=address[1],b=or1302,out=x1302);
+    Or(a=x1301,b=x1302,out=y131);
+
+    And(a=notaddress0,b=out4013,out=and1304);
+    And(a=address[0],b=out5013,out=and1305);
+    And(a=notaddress0,b=out6013,out=and1306);
+    And(a=address[0],b=out7013,out=and1307);
+    Or(a=and1304,b=and1305,out=or1303);
+    Or(a=and1306,b=and1307,out=or1304);
+    And(a=notaddress1,b=or1303,out=x1303);
+    And(a=address[1],b=or1304,out=x1304);
+    Or(a=x1303,b=x1304,out=y132);
+
+    Nand(a=notaddress2,b=y131,out=nand131);
+    Nand(a=address[2],b=y132,out=nand132);
+    Nand(a=nand131,b=nand132,out=out[13]);
+    
+    And(a=notaddress0,b=out0014,out=and1400);
+    And(a=address[0],b=out1014,out=and1401);
+    And(a=notaddress0,b=out2014,out=and1402);
+    And(a=address[0],b=out3014,out=and1403);
+    Or(a=and1400,b=and1401,out=or1401);
+    Or(a=and1402,b=and1403,out=or1402);
+    And(a=notaddress1,b=or1401,out=x1401);
+    And(a=address[1],b=or1402,out=x1402);
+    Or(a=x1401,b=x1402,out=y141);
+
+    And(a=notaddress0,b=out4014,out=and1404);
+    And(a=address[0],b=out5014,out=and1405);
+    And(a=notaddress0,b=out6014,out=and1406);
+    And(a=address[0],b=out7014,out=and1407);
+    Or(a=and1404,b=and1405,out=or1403);
+    Or(a=and1406,b=and1407,out=or1404);
+    And(a=notaddress1,b=or1403,out=x1403);
+    And(a=address[1],b=or1404,out=x1404);
+    Or(a=x1403,b=x1404,out=y142);
+
+    Nand(a=notaddress2,b=y141,out=nand141);
+    Nand(a=address[2],b=y142,out=nand142);
+    Nand(a=nand141,b=nand142,out=out[14]);
+    
+    And(a=notaddress0,b=out0015,out=and1500);
+    And(a=address[0],b=out1015,out=and1501);
+    And(a=notaddress0,b=out2015,out=and1502);
+    And(a=address[0],b=out3015,out=and1503);
+    Or(a=and1500,b=and1501,out=or1501);
+    Or(a=and1502,b=and1503,out=or1502);
+    And(a=notaddress1,b=or1501,out=x1501);
+    And(a=address[1],b=or1502,out=x1502);
+    Or(a=x1501,b=x1502,out=y151);
+
+    And(a=notaddress0,b=out4015,out=and1504);
+    And(a=address[0],b=out5015,out=and1505);
+    And(a=notaddress0,b=out6015,out=and1506);
+    And(a=address[0],b=out7015,out=and1507);
+    Or(a=and1504,b=and1505,out=or1503);
+    Or(a=and1506,b=and1507,out=or1504);
+    And(a=notaddress1,b=or1503,out=x1503);
+    And(a=address[1],b=or1504,out=x1504);
+    Or(a=x1503,b=x1504,out=y152);
+
+    Nand(a=notaddress2,b=y151,out=nand151);
+    Nand(a=address[2],b=y152,out=nand152);
+    Nand(a=nand151,b=nand152,out=out[15]);
+
+} 

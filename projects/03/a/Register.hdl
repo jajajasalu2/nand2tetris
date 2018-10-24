@@ -1,0 +1,115 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/a/Register.hdl
+
+/**
+ * 16-bit register:
+ * If load[t] == 1 then out[t+1] = in[t]
+ * else out does not change
+ */
+
+CHIP Register {
+    IN in[16], load;
+    OUT out[16];
+
+    PARTS:
+    Not(in=load,out=notload);
+
+    And(a=notload,b=outloop0,out=mux1);
+    And(a=load,b=in[0],out=mux2);
+    Or(a=mux1,b=mux2,out=muxout0);
+    DFF(in=muxout0,out=out[0]);
+    DFF(in=muxout0,out=outloop0);
+
+    And(a=notload,b=outloop1,out=mux3);
+    And(a=load,b=in[1],out=mux4);
+    Or(a=mux3,b=mux4,out=muxout1);
+    DFF(in=muxout1,out=out[1]);
+    DFF(in=muxout1,out=outloop1);
+
+    And(a=notload,b=outloop2,out=mux5);
+    And(a=load,b=in[2],out=mux6);
+    Or(a=mux5,b=mux6,out=muxout2);
+    DFF(in=muxout2,out=out[2]);
+    DFF(in=muxout2,out=outloop2);
+
+    And(a=notload,b=outloop3,out=mux7);
+    And(a=load,b=in[3],out=mux8);
+    Or(a=mux7,b=mux8,out=muxout3);
+    DFF(in=muxout3,out=out[3]);
+    DFF(in=muxout3,out=outloop3);
+
+    And(a=notload,b=outloop4,out=mux9);
+    And(a=load,b=in[4],out=mux10);
+    Or(a=mux9,b=mux10,out=muxout4);
+    DFF(in=muxout4,out=out[4]);
+    DFF(in=muxout4,out=outloop4);
+
+    And(a=notload,b=outloop5,out=mux11);
+    And(a=load,b=in[5],out=mux12);
+    Or(a=mux11,b=mux12,out=muxout5);
+    DFF(in=muxout5,out=out[5]);
+    DFF(in=muxout5,out=outloop5);
+
+    And(a=notload,b=outloop6,out=mux13);
+    And(a=load,b=in[6],out=mux14);
+    Or(a=mux13,b=mux14,out=muxout6);
+    DFF(in=muxout6,out=out[6]);
+    DFF(in=muxout6,out=outloop6);
+
+    And(a=notload,b=outloop7,out=mux15);
+    And(a=load,b=in[7],out=mux16);
+    Or(a=mux15,b=mux16,out=muxout7);
+    DFF(in=muxout7,out=out[7]);
+    DFF(in=muxout7,out=outloop7);
+
+    And(a=notload,b=outloop8,out=mux17);
+    And(a=load,b=in[8],out=mux18);
+    Or(a=mux17,b=mux18,out=muxout8);
+    DFF(in=muxout8,out=out[8]);
+    DFF(in=muxout8,out=outloop8);
+
+    And(a=notload,b=outloop9,out=mux19);
+    And(a=load,b=in[9],out=mux20);
+    Or(a=mux19,b=mux20,out=muxout9);
+    DFF(in=muxout9,out=out[9]);
+    DFF(in=muxout9,out=outloop9);
+
+    And(a=notload,b=outloop10,out=mux21);
+    And(a=load,b=in[10],out=mux22);
+    Or(a=mux21,b=mux22,out=muxout10);
+    DFF(in=muxout10,out=out[10]);
+    DFF(in=muxout10,out=outloop10);
+
+    And(a=notload,b=outloop11,out=mux23);
+    And(a=load,b=in[11],out=mux24);
+    Or(a=mux23,b=mux24,out=muxout11);
+    DFF(in=muxout11,out=out[11]);
+    DFF(in=muxout11,out=outloop11);
+
+    And(a=notload,b=outloop12,out=mux25);
+    And(a=load,b=in[12],out=mux26);
+    Or(a=mux25,b=mux26,out=muxout12);
+    DFF(in=muxout12,out=out[12]);
+    DFF(in=muxout12,out=outloop12);
+
+    And(a=notload,b=outloop13,out=mux27);
+    And(a=load,b=in[13],out=mux28);
+    Or(a=mux27,b=mux28,out=muxout13);
+    DFF(in=muxout13,out=out[13]);
+    DFF(in=muxout13,out=outloop13);
+
+    And(a=notload,b=outloop14,out=mux29);
+    And(a=load,b=in[14],out=mux30);
+    Or(a=mux29,b=mux30,out=muxout14);
+    DFF(in=muxout14,out=out[14]);
+    DFF(in=muxout14,out=outloop14);
+
+    And(a=notload,b=outloop15,out=mux31);
+    And(a=load,b=in[15],out=mux32);
+    Or(a=mux31,b=mux32,out=muxout15);
+    DFF(in=muxout15,out=out[15]);
+    DFF(in=muxout15,out=outloop15);
+
+}

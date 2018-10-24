@@ -1,0 +1,78 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/Memory.hdl
+
+/**
+ * The complete address space of the Hack computer's memory,
+ * including RAM and memory-mapped I/O. 
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load==1, the in value is loaded 
+ * into the memory location specified by address. This value becomes 
+ * available through the out output from the next time step onward.
+ * Address space rules:
+ * Only the upper 16K+8K+1 words of the Memory chip are used. 
+ * Access to address>0x6000 is invalid. Access to any address in 
+ * the range 0x4000-0x5FFF results in accessing the screen memory 
+ * map. Access to address 0x6000 results in accessing the keyboard 
+ * memory map. The behavior in these addresses is described in the 
+ * Screen and Keyboard chip specifications given in the book.
+ */
+
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+
+    Not(in=address[0],out=notaddress0);
+    Not(in=address[1],out=notaddress1);
+    Not(in=address[2],out=notaddress2);
+    Not(in=address[3],out=notaddress3);
+    Not(in=address[4],out=notaddress4);
+    Not(in=address[5],out=notaddress5);
+    Not(in=address[6],out=notaddress6);
+    Not(in=address[7],out=notaddress7);
+    Not(in=address[8],out=notaddress8);
+    Not(in=address[9],out=notaddress9);
+    Not(in=address[10],out=notaddress10);
+    Not(in=address[11],out=notaddress11);
+    Not(in=address[12],out=notaddress12);
+    Not(in=address[13],out=notaddress13);
+    Not(in=address[14],out=notaddress14,out=selectData);
+
+    And(a=address[14],b=address[13],out=nd1413);
+    And(a=notaddress12,b=nd1413,out=ram0x6);
+
+    And(a=notaddress0,b=notaddress1,out=ndn0n1);
+    And(a=notaddress2,b=notaddress3,out=ndn2n3);
+    And(a=notaddress4,b=notaddress5,out=ndn4n5);
+    And(a=notaddress6,b=notaddress7,out=ndn6n7);
+    And(a=notaddress8,b=notaddress9,out=ndn8n9);
+    And(a=notaddress10,b=notaddress11,out=ndn10n11);
+
+    And(a=ndn0n1,b=ndn2n3,out=nd0001);
+    And(a=ndn4n5,b=ndn6n7,out=nd0010);
+    And(a=ndn8n9,b=ndn10n11,out=nd0100);
+
+    And(a=nd0001,b=nd0010,out=nd0011);
+    And(a=nd0100,b=ram0x6,out=nd1100);
+
+    And(a=nd0011,b=nd1100,out=selectKeyboard); 
+    And(a=address[14],b=notaddress13,out=selectScreen);   
+
+    And(a=selectScreen,b=load,out=loadScreen);
+    And(a=selectData,b=load,out=loadData);
+     
+    RAM16K(in=in,load=loadData,address=address[0..13],out=outData);
+    Screen(in=in,load=loadScreen,address=address[0..12],out=outScreen);
+    Keyboard(out=outKeyboard);
+
+    Mux16(a=outScreen,b=outData,sel=selectData,out=mux1);
+    Mux16(a=mux1,b=outKeyboard,sel=selectKeyboard,out=out);
+
+}
+

@@ -1,0 +1,714 @@
+    // This file is part of www.nand2tetris.org
+    // and the book "The Elements of Computing Systems"
+    // by Nisan and Schocken, MIT Press.
+    // File name: projects/02/ALU.hdl
+
+    /**
+     * The ALU (Arithmetic Logic Unit).
+     * Computes one of the following functions:
+     * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+     * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
+     * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+     * In addition, the ALU computes two 1-bit outputs:
+     * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+     * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+     */
+
+    // Implementation: the ALU logic manipulates the x and y inputs
+    // and operates on the resulting values, as follows:
+    // if (zx == 1) set x = 0        // 16-bit constant
+    // if (nx == 1) set x = !x       // bitwise not
+    // if (zy == 1) set y = 0        // 16-bit constant
+    // if (ny == 1) set y = !y       // bitwise not
+    // if (f == 1)  set out = x + y  // integer 2's complement addition
+    // if (f == 0)  set out = x & y  // bitwise and
+    // if (no == 1) set out = !out   // bitwise not
+    // if (out == 0) set zr = 1
+    // if (out < 0) set ng = 1
+
+    CHIP ALU {
+        IN  
+            x[16], y[16],  // 16-bit inputs        
+            zx, // zero the x input?
+            nx, // negate the x input?
+            zy, // zero the y input?
+            ny, // negate the y input?
+            f,  // compute out = x + y (if 1) or x & y (if 0)
+            no; // negate the out output?
+
+        OUT 
+            out[16], // 16-bit output
+            zr, // 1 if (out == 0), 0 otherwise
+            ng; // 1 if (out < 0),  0 otherwise
+
+        PARTS:
+
+        Not(in=zx,out=notzx);
+        Not(in=nx,out=notnx);
+        Not(in=zy,out=notzy);
+        Not(in=ny,out=notny);
+        Not(in=f,out=notf);
+        Not(in=no,out=notno); 
+
+        And(a=x[0],b=false,out=xzero0);
+        Not(in=x[0],out=xneg0);
+        Not(in=xzero0,out=xnegzero0);
+        
+        And(a=notzx,b=x[0],out=and0); 
+        And(a=zx,b=xzero0,out=and1);
+        And(a=notzx,b=xneg0,out=and2);
+        And(a=zx,b=xnegzero0,out=and3);
+        Or(a=and0,b=and1,out=or1);
+        Or(a=and2,b=and3,out=or2);
+        And(a=notnx,b=or1,out=x1);
+        And(a=nx,b=or2,out=x2);
+        Or(a=x1,b=x2,out=xout0);
+
+        And(a=y[0],b=false,out=yzero0);
+        Not(in=y[0],out=yneg0);
+        Not(in=yzero0,out=ynegzero0);
+                
+        And(a=notzy,b=y[0],out=and4); 
+        And(a=zy,b=yzero0,out=and5);
+        And(a=notzy,b=yneg0,out=and6);
+        And(a=zy,b=ynegzero0,out=and7);
+        Or(a=and4,b=and5,out=or3);
+        Or(a=and6,b=and7,out=or4);
+        And(a=notny,b=or3,out=y1);
+        And(a=ny,b=or4,out=y2);
+        Or(a=y1,b=y2,out=yout0);
+
+        Xor(a=xout0,b=yout0,out=xplusy0); 
+        And(a=xout0,b=yout0,out=xandy0);
+
+        Nand(a=notf,b=xandy0,out=out1);
+        Nand(a=f,b=xplusy0,out=out2);
+        Nand(a=out1,b=out2,out=outin0);
+
+
+        And(a=x[1],b=false,out=xzero1);
+        Not(in=x[1],out=xneg1);
+        Not(in=xzero1,out=xnegzero1);
+        
+        And(a=notzx,b=x[1],out=and8); 
+        And(a=zx,b=xzero1,out=and9);
+        And(a=notzx,b=xneg1,out=and10);
+        And(a=zx,b=xnegzero1,out=and11);
+        Or(a=and8,b=and9,out=or9);
+        Or(a=and10,b=and11,out=or10);
+        And(a=notnx,b=or9,out=x9);
+        And(a=nx,b=or10,out=x10);
+        Or(a=x9,b=x10,out=xout1);
+
+        And(a=y[1],b=false,out=yzero1);
+        Not(in=y[1],out=yneg1);
+        Not(in=yzero1,out=ynegzero1);
+                
+        And(a=notzy,b=y[1],out=and12); 
+        And(a=zy,b=yzero1,out=and13);
+        And(a=notzy,b=yneg1,out=and14);
+        And(a=zy,b=ynegzero1,out=and15);
+        Or(a=and12,b=and13,out=or11);
+        Or(a=and14,b=and15,out=or12);
+        And(a=notny,b=or11,out=y9);
+        And(a=ny,b=or12,out=y10);
+        Or(a=y9,b=y10,out=yout1);
+
+        Xor(a=xout1,b=yout1,out=xplusy1); 
+        And(a=xout1,b=yout1,out=xandy1);
+
+        Nand(a=notf,b=xandy1,out=out9);
+        Nand(a=f,b=xplusy1,out=out10);
+        Nand(a=out9,b=out10,out=outin1);
+
+
+        And(a=x[2],b=false,out=xzero2);
+        Not(in=x[2],out=xneg2);
+        Not(in=xzero2,out=xnegzero2);
+        
+        And(a=notzx,b=x[2],out=and16); 
+        And(a=zx,b=xzero2,out=and17);
+        And(a=notzx,b=xneg2,out=and18);
+        And(a=zx,b=xnegzero2,out=and19);
+        Or(a=and16,b=and17,out=or17);
+        Or(a=and18,b=and19,out=or18);
+        And(a=notnx,b=or17,out=x17);
+        And(a=nx,b=or18,out=x18);
+        Or(a=x17,b=x18,out=xout2);
+
+        And(a=y[2],b=false,out=yzero2);
+        Not(in=y[2],out=yneg2);
+        Not(in=yzero2,out=ynegzero2);
+                
+        And(a=notzy,b=y[2],out=and20); 
+        And(a=zy,b=yzero2,out=and21);
+        And(a=notzy,b=yneg2,out=and22);
+        And(a=zy,b=ynegzero2,out=and23);
+        Or(a=and20,b=and21,out=or19);
+        Or(a=and22,b=and23,out=or20);
+        And(a=notny,b=or19,out=y17);
+        And(a=ny,b=or20,out=y18);
+        Or(a=y17,b=y18,out=yout2);
+
+        Xor(a=xout2,b=yout2,out=xplusy2); 
+        And(a=xout2,b=yout2,out=xandy2);
+
+        Nand(a=notf,b=xandy2,out=out17);
+        Nand(a=f,b=xplusy2,out=out18);
+        Nand(a=out17,b=out18,out=outin2);
+
+
+        And(a=x[3],b=false,out=xzero3);
+        Not(in=x[3],out=xneg3);
+        Not(in=xzero3,out=xnegzero3);
+        
+        And(a=notzx,b=x[3],out=and24); 
+        And(a=zx,b=xzero3,out=and25);
+        And(a=notzx,b=xneg3,out=and26);
+        And(a=zx,b=xnegzero3,out=and27);
+        Or(a=and24,b=and25,out=or25);
+        Or(a=and26,b=and27,out=or26);
+        And(a=notnx,b=or25,out=x25);
+        And(a=nx,b=or26,out=x26);
+        Or(a=x25,b=x26,out=xout3);
+
+        And(a=y[3],b=false,out=yzero3);
+        Not(in=y[3],out=yneg3);
+        Not(in=yzero3,out=ynegzero3);
+                
+        And(a=notzy,b=y[3],out=and28); 
+        And(a=zy,b=yzero3,out=and29);
+        And(a=notzy,b=yneg3,out=and30);
+        And(a=zy,b=ynegzero3,out=and31);
+        Or(a=and28,b=and29,out=or27);
+        Or(a=and30,b=and31,out=or28);
+        And(a=notny,b=or27,out=y25);
+        And(a=ny,b=or28,out=y26);
+        Or(a=y25,b=y26,out=yout3);
+
+        Xor(a=xout3,b=yout3,out=xplusy3); 
+        And(a=xout3,b=yout3,out=xandy3);
+
+        Nand(a=notf,b=xandy3,out=out25);
+        Nand(a=f,b=xplusy3,out=out26);
+        Nand(a=out25,b=out26,out=outin3);
+
+
+        And(a=x[4],b=false,out=xzero4);
+        Not(in=x[4],out=xneg4);
+        Not(in=xzero4,out=xnegzero4);
+        
+        And(a=notzx,b=x[4],out=and32); 
+        And(a=zx,b=xzero4,out=and33);
+        And(a=notzx,b=xneg4,out=and34);
+        And(a=zx,b=xnegzero4,out=and35);
+        Or(a=and32,b=and33,out=or33);
+        Or(a=and34,b=and35,out=or34);
+        And(a=notnx,b=or33,out=x33);
+        And(a=nx,b=or34,out=x34);
+        Or(a=x33,b=x34,out=xout4);
+
+        And(a=y[4],b=false,out=yzero4);
+        Not(in=y[4],out=yneg4);
+        Not(in=yzero4,out=ynegzero4);
+                
+        And(a=notzy,b=y[4],out=and36); 
+        And(a=zy,b=yzero4,out=and37);
+        And(a=notzy,b=yneg4,out=and38);
+        And(a=zy,b=ynegzero4,out=and39);
+        Or(a=and36,b=and37,out=or35);
+        Or(a=and38,b=and39,out=or36);
+        And(a=notny,b=or35,out=y33);
+        And(a=ny,b=or36,out=y34);
+        Or(a=y33,b=y34,out=yout4);
+
+        Xor(a=xout4,b=yout4,out=xplusy4); 
+        And(a=xout4,b=yout4,out=xandy4);
+
+        Nand(a=notf,b=xandy4,out=out33);
+        Nand(a=f,b=xplusy4,out=out34);
+        Nand(a=out33,b=out34,out=outin4);
+
+
+        And(a=x[5],b=false,out=xzero5);
+        Not(in=x[5],out=xneg5);
+        Not(in=xzero5,out=xnegzero5);
+        
+        And(a=notzx,b=x[5],out=and40); 
+        And(a=zx,b=xzero5,out=and41);
+        And(a=notzx,b=xneg5,out=and42);
+        And(a=zx,b=xnegzero5,out=and43);
+        Or(a=and40,b=and41,out=or41);
+        Or(a=and42,b=and43,out=or42);
+        And(a=notnx,b=or41,out=x41);
+        And(a=nx,b=or42,out=x42);
+        Or(a=x41,b=x42,out=xout5);
+
+        And(a=y[5],b=false,out=yzero5);
+        Not(in=y[5],out=yneg5);
+        Not(in=yzero5,out=ynegzero5);
+                
+        And(a=notzy,b=y[5],out=and44); 
+        And(a=zy,b=yzero5,out=and45);
+        And(a=notzy,b=yneg5,out=and46);
+        And(a=zy,b=ynegzero5,out=and47);
+        Or(a=and44,b=and45,out=or43);
+        Or(a=and46,b=and47,out=or44);
+        And(a=notny,b=or43,out=y41);
+        And(a=ny,b=or44,out=y42);
+        Or(a=y41,b=y42,out=yout5);
+
+        Xor(a=xout5,b=yout5,out=xplusy5); 
+        And(a=xout5,b=yout5,out=xandy5);
+
+        Nand(a=notf,b=xandy5,out=out41);
+        Nand(a=f,b=xplusy5,out=out42);
+        Nand(a=out41,b=out42,out=outin5);
+
+
+        And(a=x[6],b=false,out=xzero6);
+        Not(in=x[6],out=xneg6);
+        Not(in=xzero6,out=xnegzero6);
+        
+        And(a=notzx,b=x[6],out=and48); 
+        And(a=zx,b=xzero6,out=and49);
+        And(a=notzx,b=xneg6,out=and50);
+        And(a=zx,b=xnegzero6,out=and51);
+        Or(a=and48,b=and49,out=or49);
+        Or(a=and50,b=and51,out=or50);
+        And(a=notnx,b=or49,out=x49);
+        And(a=nx,b=or50,out=x50);
+        Or(a=x49,b=x50,out=xout6);
+
+        And(a=y[6],b=false,out=yzero6);
+        Not(in=y[6],out=yneg6);
+        Not(in=yzero6,out=ynegzero6);
+                
+        And(a=notzy,b=y[6],out=and52); 
+        And(a=zy,b=yzero6,out=and53);
+        And(a=notzy,b=yneg6,out=and54);
+        And(a=zy,b=ynegzero6,out=and55);
+        Or(a=and52,b=and53,out=or51);
+        Or(a=and54,b=and55,out=or52);
+        And(a=notny,b=or51,out=y49);
+        And(a=ny,b=or52,out=y50);
+        Or(a=y49,b=y50,out=yout6);
+
+        Xor(a=xout6,b=yout6,out=xplusy6); 
+        And(a=xout6,b=yout6,out=xandy6);
+
+        Nand(a=notf,b=xandy6,out=out49);
+        Nand(a=f,b=xplusy6,out=out50);
+        Nand(a=out49,b=out50,out=outin6);
+
+
+        And(a=x[7],b=false,out=xzero7);
+        Not(in=x[7],out=xneg7);
+        Not(in=xzero7,out=xnegzero7);
+        
+        And(a=notzx,b=x[7],out=and56); 
+        And(a=zx,b=xzero7,out=and57);
+        And(a=notzx,b=xneg7,out=and58);
+        And(a=zx,b=xnegzero7,out=and59);
+        Or(a=and56,b=and57,out=or57);
+        Or(a=and58,b=and59,out=or58);
+        And(a=notnx,b=or57,out=x57);
+        And(a=nx,b=or58,out=x58);
+        Or(a=x57,b=x58,out=xout7);
+
+        And(a=y[7],b=false,out=yzero7);
+        Not(in=y[7],out=yneg7);
+        Not(in=yzero7,out=ynegzero7);
+                
+        And(a=notzy,b=y[7],out=and60); 
+        And(a=zy,b=yzero7,out=and61);
+        And(a=notzy,b=yneg7,out=and62);
+        And(a=zy,b=ynegzero7,out=and63);
+        Or(a=and60,b=and61,out=or59);
+        Or(a=and62,b=and63,out=or60);
+        And(a=notny,b=or59,out=y57);
+        And(a=ny,b=or60,out=y58);
+        Or(a=y57,b=y58,out=yout7);
+
+        Xor(a=xout7,b=yout7,out=xplusy7); 
+        And(a=xout7,b=yout7,out=xandy7);
+
+        Nand(a=notf,b=xandy7,out=out57);
+        Nand(a=f,b=xplusy7,out=out58);
+        Nand(a=out57,b=out58,out=outin7);
+
+
+        And(a=x[8],b=false,out=xzero8);
+        Not(in=x[8],out=xneg8);
+        Not(in=xzero8,out=xnegzero8);
+        
+        And(a=notzx,b=x[8],out=and64); 
+        And(a=zx,b=xzero8,out=and65);
+        And(a=notzx,b=xneg8,out=and66);
+        And(a=zx,b=xnegzero8,out=and67);
+        Or(a=and64,b=and65,out=or65);
+        Or(a=and66,b=and67,out=or66);
+        And(a=notnx,b=or65,out=x65);
+        And(a=nx,b=or66,out=x66);
+        Or(a=x65,b=x66,out=xout8);
+
+        And(a=y[8],b=false,out=yzero8);
+        Not(in=y[8],out=yneg8);
+        Not(in=yzero8,out=ynegzero8);
+                
+        And(a=notzy,b=y[8],out=and68); 
+        And(a=zy,b=yzero8,out=and69);
+        And(a=notzy,b=yneg8,out=and70);
+        And(a=zy,b=ynegzero8,out=and71);
+        Or(a=and68,b=and69,out=or67);
+        Or(a=and70,b=and71,out=or68);
+        And(a=notny,b=or67,out=y65);
+        And(a=ny,b=or68,out=y66);
+        Or(a=y65,b=y66,out=yout8);
+
+        Xor(a=xout8,b=yout8,out=xplusy8); 
+        And(a=xout8,b=yout8,out=xandy8);
+
+        Nand(a=notf,b=xandy8,out=out65);
+        Nand(a=f,b=xplusy8,out=out66);
+        Nand(a=out65,b=out66,out=outin8);
+
+
+        And(a=x[9],b=false,out=xzero9);
+        Not(in=x[9],out=xneg9);
+        Not(in=xzero9,out=xnegzero9);
+        
+        And(a=notzx,b=x[9],out=and72); 
+        And(a=zx,b=xzero9,out=and73);
+        And(a=notzx,b=xneg9,out=and74);
+        And(a=zx,b=xnegzero9,out=and75);
+        Or(a=and72,b=and73,out=or73);
+        Or(a=and74,b=and75,out=or74);
+        And(a=notnx,b=or73,out=x73);
+        And(a=nx,b=or74,out=x74);
+        Or(a=x73,b=x74,out=xout9);
+
+        And(a=y[9],b=false,out=yzero9);
+        Not(in=y[9],out=yneg9);
+        Not(in=yzero9,out=ynegzero9);
+                
+        And(a=notzy,b=y[9],out=and76); 
+        And(a=zy,b=yzero9,out=and77);
+        And(a=notzy,b=yneg9,out=and78);
+        And(a=zy,b=ynegzero9,out=and79);
+        Or(a=and76,b=and77,out=or75);
+        Or(a=and78,b=and79,out=or76);
+        And(a=notny,b=or75,out=y73);
+        And(a=ny,b=or76,out=y74);
+        Or(a=y73,b=y74,out=yout9);
+
+        Xor(a=xout9,b=yout9,out=xplusy9); 
+        And(a=xout9,b=yout9,out=xandy9);
+
+        Nand(a=notf,b=xandy9,out=out73);
+        Nand(a=f,b=xplusy9,out=out74);
+        Nand(a=out73,b=out74,out=outin9);
+
+
+        And(a=x[10],b=false,out=xzero10);
+        Not(in=x[10],out=xneg10);
+        Not(in=xzero10,out=xnegzero10);
+        
+        And(a=notzx,b=x[10],out=and80); 
+        And(a=zx,b=xzero10,out=and81);
+        And(a=notzx,b=xneg10,out=and82);
+        And(a=zx,b=xnegzero10,out=and83);
+        Or(a=and80,b=and81,out=or81);
+        Or(a=and82,b=and83,out=or82);
+        And(a=notnx,b=or81,out=x81);
+        And(a=nx,b=or82,out=x82);
+        Or(a=x81,b=x82,out=xout10);
+
+        And(a=y[10],b=false,out=yzero10);
+        Not(in=y[10],out=yneg10);
+        Not(in=yzero10,out=ynegzero10);
+                
+        And(a=notzy,b=y[10],out=and84); 
+        And(a=zy,b=yzero10,out=and85);
+        And(a=notzy,b=yneg10,out=and86);
+        And(a=zy,b=ynegzero10,out=and87);
+        Or(a=and84,b=and85,out=or83);
+        Or(a=and86,b=and87,out=or84);
+        And(a=notny,b=or83,out=y81);
+        And(a=ny,b=or84,out=y82);
+        Or(a=y81,b=y82,out=yout10);
+
+        Xor(a=xout10,b=yout10,out=xplusy10); 
+        And(a=xout10,b=yout10,out=xandy10);
+
+        Nand(a=notf,b=xandy10,out=out81);
+        Nand(a=f,b=xplusy10,out=out82);
+        Nand(a=out81,b=out82,out=outin10);
+
+
+        And(a=x[11],b=false,out=xzero11);
+        Not(in=x[11],out=xneg11);
+        Not(in=xzero11,out=xnegzero11);
+        
+        And(a=notzx,b=x[11],out=and88); 
+        And(a=zx,b=xzero11,out=and89);
+        And(a=notzx,b=xneg11,out=and90);
+        And(a=zx,b=xnegzero11,out=and91);
+        Or(a=and88,b=and89,out=or89);
+        Or(a=and90,b=and91,out=or90);
+        And(a=notnx,b=or89,out=x89);
+        And(a=nx,b=or90,out=x90);
+        Or(a=x89,b=x90,out=xout11);
+
+        And(a=y[11],b=false,out=yzero11);
+        Not(in=y[11],out=yneg11);
+        Not(in=yzero11,out=ynegzero11);
+                
+        And(a=notzy,b=y[11],out=and92); 
+        And(a=zy,b=yzero11,out=and93);
+        And(a=notzy,b=yneg11,out=and94);
+        And(a=zy,b=ynegzero11,out=and95);
+        Or(a=and92,b=and93,out=or91);
+        Or(a=and94,b=and95,out=or92);
+        And(a=notny,b=or91,out=y89);
+        And(a=ny,b=or92,out=y90);
+        Or(a=y89,b=y90,out=yout11);
+
+        Xor(a=xout11,b=yout11,out=xplusy11); 
+        And(a=xout11,b=yout11,out=xandy11);
+
+        Nand(a=notf,b=xandy11,out=out89);
+        Nand(a=f,b=xplusy11,out=out90);
+        Nand(a=out89,b=out90,out=outin11);
+
+
+        And(a=x[12],b=false,out=xzero12);
+        Not(in=x[12],out=xneg12);
+        Not(in=xzero12,out=xnegzero12);
+        
+        And(a=notzx,b=x[12],out=and96); 
+        And(a=zx,b=xzero12,out=and97);
+        And(a=notzx,b=xneg12,out=and98);
+        And(a=zx,b=xnegzero12,out=and99);
+        Or(a=and96,b=and97,out=or97);
+        Or(a=and98,b=and99,out=or98);
+        And(a=notnx,b=or97,out=x97);
+        And(a=nx,b=or98,out=x98);
+        Or(a=x97,b=x98,out=xout12);
+
+        And(a=y[12],b=false,out=yzero12);
+        Not(in=y[12],out=yneg12);
+        Not(in=yzero12,out=ynegzero12);
+                
+        And(a=notzy,b=y[12],out=and100); 
+        And(a=zy,b=yzero12,out=and101);
+        And(a=notzy,b=yneg12,out=and102);
+        And(a=zy,b=ynegzero12,out=and103);
+        Or(a=and100,b=and101,out=or99);
+        Or(a=and102,b=and103,out=or100);
+        And(a=notny,b=or99,out=y97);
+        And(a=ny,b=or100,out=y98);
+        Or(a=y97,b=y98,out=yout12);
+
+        Xor(a=xout12,b=yout12,out=xplusy12); 
+        And(a=xout12,b=yout12,out=xandy12);
+
+        Nand(a=notf,b=xandy12,out=out97);
+        Nand(a=f,b=xplusy12,out=out98);
+        Nand(a=out97,b=out98,out=outin12);
+
+
+        And(a=x[13],b=false,out=xzero13);
+        Not(in=x[13],out=xneg13);
+        Not(in=xzero13,out=xnegzero13);
+        
+        And(a=notzx,b=x[13],out=and104); 
+        And(a=zx,b=xzero13,out=and105);
+        And(a=notzx,b=xneg13,out=and106);
+        And(a=zx,b=xnegzero13,out=and107);
+        Or(a=and104,b=and105,out=or105);
+        Or(a=and106,b=and107,out=or106);
+        And(a=notnx,b=or105,out=x105);
+        And(a=nx,b=or106,out=x106);
+        Or(a=x105,b=x106,out=xout13);
+
+        And(a=y[13],b=false,out=yzero13);
+        Not(in=y[13],out=yneg13);
+        Not(in=yzero13,out=ynegzero13);
+                
+        And(a=notzy,b=y[13],out=and108); 
+        And(a=zy,b=yzero13,out=and109);
+        And(a=notzy,b=yneg13,out=and110);
+        And(a=zy,b=ynegzero13,out=and111);
+        Or(a=and108,b=and109,out=or107);
+        Or(a=and110,b=and111,out=or108);
+        And(a=notny,b=or107,out=y105);
+        And(a=ny,b=or108,out=y106);
+        Or(a=y105,b=y106,out=yout13);
+
+        Xor(a=xout13,b=yout13,out=xplusy13); 
+        And(a=xout13,b=yout13,out=xandy13);
+
+        Nand(a=notf,b=xandy13,out=out105);
+        Nand(a=f,b=xplusy13,out=out106);
+        Nand(a=out105,b=out106,out=outin13);
+
+
+        And(a=x[14],b=false,out=xzero14);
+        Not(in=x[14],out=xneg14);
+        Not(in=xzero14,out=xnegzero14);
+        
+        And(a=notzx,b=x[14],out=and112); 
+        And(a=zx,b=xzero14,out=and113);
+        And(a=notzx,b=xneg14,out=and114);
+        And(a=zx,b=xnegzero14,out=and115);
+        Or(a=and112,b=and113,out=or113);
+        Or(a=and114,b=and115,out=or114);
+        And(a=notnx,b=or113,out=x113);
+        And(a=nx,b=or114,out=x114);
+        Or(a=x113,b=x114,out=xout14);
+
+        And(a=y[14],b=false,out=yzero14);
+        Not(in=y[14],out=yneg14);
+        Not(in=yzero14,out=ynegzero14);
+                
+        And(a=notzy,b=y[14],out=and116); 
+        And(a=zy,b=yzero14,out=and117);
+        And(a=notzy,b=yneg14,out=and118);
+        And(a=zy,b=ynegzero14,out=and119);
+        Or(a=and116,b=and117,out=or115);
+        Or(a=and118,b=and119,out=or116);
+        And(a=notny,b=or115,out=y113);
+        And(a=ny,b=or116,out=y114);
+        Or(a=y113,b=y114,out=yout14);
+
+        Xor(a=xout14,b=yout14,out=xplusy14); 
+        And(a=xout14,b=yout14,out=xandy14);
+
+        Nand(a=notf,b=xandy14,out=out113);
+        Nand(a=f,b=xplusy14,out=out114);
+        Nand(a=out113,b=out114,out=outin14);
+
+
+        And(a=x[15],b=false,out=xzero15);
+        Not(in=x[15],out=xneg15);
+        Not(in=xzero15,out=xnegzero15);
+        
+        And(a=notzx,b=x[15],out=and120); 
+        And(a=zx,b=xzero15,out=and121);
+        And(a=notzx,b=xneg15,out=and122);
+        And(a=zx,b=xnegzero15,out=and123);
+        Or(a=and120,b=and121,out=or121);
+        Or(a=and122,b=and123,out=or122);
+        And(a=notnx,b=or121,out=x121);
+        And(a=nx,b=or122,out=x122);
+        Or(a=x121,b=x122,out=xout15);
+
+        And(a=y[15],b=false,out=yzero15);
+        Not(in=y[15],out=yneg15);
+        Not(in=yzero15,out=ynegzero15);
+                
+        And(a=notzy,b=y[15],out=and124); 
+        And(a=zy,b=yzero15,out=and125);
+        And(a=notzy,b=yneg15,out=and126);
+        And(a=zy,b=ynegzero15,out=and127);
+        Or(a=and124,b=and125,out=or123);
+        Or(a=and126,b=and127,out=or124);
+        And(a=notny,b=or123,out=y121);
+        And(a=ny,b=or124,out=y122);
+        Or(a=y121,b=y122,out=yout15);
+
+        Xor(a=xout15,b=yout15,out=xplusy15); 
+        And(a=xout15,b=yout15,out=xandy15);
+
+        Nand(a=notf,b=xandy15,out=out121);
+        Nand(a=f,b=xplusy15,out=out122);
+        Nand(a=out121,b=out122,out=outin15);
+
+        Not(in=outin0,out=notout0);
+        Not(in=outin1,out=notout1);
+        Not(in=outin2,out=notout2);
+        Not(in=outin3,out=notout3);
+        Not(in=outin4,out=notout4);
+        Not(in=outin5,out=notout5);
+        Not(in=outin6,out=notout6);
+        Not(in=outin7,out=notout7);
+        Not(in=outin8,out=notout8);
+        Not(in=outin9,out=notout9);
+        Not(in=outin10,out=notout10);
+        Not(in=outin11,out=notout11);
+        Not(in=outin12,out=notout12);
+        Not(in=outin13,out=notout13);
+        Not(in=outin14,out=notout14);
+        Not(in=outin15,out=notout15);
+
+        Nand(a=notno,b=outin0,out=outout1);
+        Nand(a=no,b=notout0,out=outout2);
+        Nand(a=outout1,b=outout2,out=out[0]);
+        Nand(a=notno,b=outin1,out=outout3);
+        Nand(a=no,b=notout1,out=outout4);
+        Nand(a=outout3,b=outout4,out=out[1]);
+        Nand(a=notno,b=outin2,out=outout5);
+        Nand(a=no,b=notout2,out=outout6);
+        Nand(a=outout5,b=outout6,out=out[2]);
+        Nand(a=notno,b=outin3,out=outout7);
+        Nand(a=no,b=notout3,out=outout8);
+        Nand(a=outout7,b=outout8,out=out[3]);
+        Nand(a=notno,b=outin4,out=outout9);
+        Nand(a=no,b=notout4,out=outout10);
+        Nand(a=outout9,b=outout10,out=out[4]);
+        Nand(a=notno,b=outin5,out=outout11);
+        Nand(a=no,b=notout5,out=outout12);
+        Nand(a=outout11,b=outout12,out=out[5]);
+        Nand(a=notno,b=outin6,out=outout13);
+        Nand(a=no,b=notout6,out=outout14);
+        Nand(a=outout13,b=outout14,out=out[6]);
+        Nand(a=notno,b=outin7,out=outout15);
+        Nand(a=no,b=notout7,out=outout16);
+        Nand(a=outout15,b=outout16,out=out[7]);
+        Nand(a=notno,b=outin8,out=outout17);
+        Nand(a=no,b=notout8,out=outout18);
+        Nand(a=outout17,b=outout18,out=out[8]);
+        Nand(a=notno,b=outin9,out=outout19);
+        Nand(a=no,b=notout9,out=outout20);
+        Nand(a=outout19,b=outout20,out=out[9]);
+        Nand(a=notno,b=outin10,out=outout21);
+        Nand(a=no,b=notout10,out=outout22);
+        Nand(a=outout21,b=outout22,out=out[10]);
+        Nand(a=notno,b=outin11,out=outout23);
+        Nand(a=no,b=notout11,out=outout24);
+        Nand(a=outout23,b=outout24,out=out[11]);
+        Nand(a=notno,b=outin12,out=outout25);
+        Nand(a=no,b=notout12,out=outout26);
+        Nand(a=outout25,b=outout26,out=out[12]);
+        Nand(a=notno,b=outin13,out=outout27);
+        Nand(a=no,b=notout13,out=outout28);
+        Nand(a=outout27,b=outout28,out=out[13]);
+        Nand(a=notno,b=outin14,out=outout29);
+        Nand(a=no,b=notout14,out=outout30);
+        Nand(a=outout29,b=outout30,out=out[14]);
+        Nand(a=notno,b=outin15,out=outout31);
+        Nand(a=no,b=notout15,out=outout32);
+        Nand(a=outout31,b=outout32,out=out[15]);
+
+
+        Or(a=outin0,b=outin1,out=outor1);
+        Or(a=outin2,b=outin3,out=outor2);
+        Or(a=outin4,b=outin5,out=outor3);
+        Or(a=outin6,b=outin7,out=outor4);
+        Or(a=outin8,b=outin9,out=outor5);
+        Or(a=outin10,b=outin11,out=outor6);
+        Or(a=outin12,b=outin13,out=outor7);
+        Or(a=outin14,b=outin15,out=outor8);
+   
+        Or(a=outor1,b=outor2,out=outor9);
+        Or(a=outor3,b=outor4,out=outor10);
+        Or(a=outor5,b=outor6,out=outor11);
+        Or(a=outor7,b=outor8,out=outor12);
+       
+        Or(a=outor9,b=outor10,out=outor13);
+        Or(a=outor11,b=outor12,out=outor14);
+    
+        Nor(a=outor13,b=outor14,out=zr);
+}
+

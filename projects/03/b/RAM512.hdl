@@ -1,0 +1,56 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/06/b/RAM6412.hdl
+
+/**
+ * Memory of 512 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address[3..5] If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM512 {
+    IN in[16], load, address[9];
+    OUT out[16];
+
+    PARTS:
+
+    Not(in=address[8],out=notaddress8);
+    Not(in=address[7],out=notaddress7);
+    Not(in=address[6],out=notaddress6);
+
+    And(a=notaddress8,b=notaddress7,out=ndn8n7);
+    And(a=notaddress8,b=address[7],out=ndn87);
+    And(a=address[8],b=notaddress7,out=nd8n7);
+    And(a=address[8],b=address[7],out=nd87);
+
+    And(a=ndn8n7,b=notaddress6,out=ram0);
+    And(a=ndn8n7,b=address[6],out=ram1);
+    And(a=ndn87,b=notaddress6,out=ram2);
+    And(a=ndn87,b=address[6],out=ram3);
+    And(a=nd8n7,b=notaddress6,out=ram4);
+    And(a=nd8n7,b=address[6],out=ram5);
+    And(a=nd87,b=notaddress6,out=ram6);
+    And(a=nd87,b=address[6],out=ram7);
+
+    And(a=ram0,b=load,out=select0);
+    And(a=ram1,b=load,out=select1);
+    And(a=ram2,b=load,out=select2);
+    And(a=ram3,b=load,out=select3);
+    And(a=ram4,b=load,out=select4);
+    And(a=ram5,b=load,out=select5);
+    And(a=ram6,b=load,out=select6);
+    And(a=ram7,b=load,out=select7);
+
+    RAM64(in=in,load=select0,address=address[0..5],out=out0);
+    RAM64(in=in,load=select1,address=address[0..5],out=out1); 
+    RAM64(in=in,load=select2,address=address[0..5],out=out2); 
+    RAM64(in=in,load=select3,address=address[0..5],out=out3); 
+    RAM64(in=in,load=select4,address=address[0..5],out=out4); 
+    RAM64(in=in,load=select5,address=address[0..5],out=out5); 
+    RAM64(in=in,load=select6,address=address[0..5],out=out6); 
+    RAM64(in=in,load=select7,address=address[0..5],out=out7); 
+
+    Mux8Way16(a=out0,b=out1,c=out2,d=out3,e=out4,f=out5,g=out6,h=out7,sel=address[6..8],out=out);
+}

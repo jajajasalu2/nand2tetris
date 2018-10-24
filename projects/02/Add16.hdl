@@ -1,0 +1,111 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/Adder16.hdl
+
+/**
+ * Adds two 16-bit values.
+ * The most significant carry bit is ignored.
+ */
+
+CHIP Add16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+	
+        Xor(a=a[0],b=b[0],out=axorb0);
+        Xor(a=axorb0,b=false,out=out[0]);
+        And(a=axorb0,b=false,out=or1);
+        And(a=a[0],b=b[0],out=or2);
+        Or(a=or1,b=or2,out=carry0);
+    
+    Xor(a=a[1],b=b[1],out=axorb1);
+    Xor(a=axorb1,b=carry0,out=out[1]);
+    And(a=axorb1,b=carry0,out=or3);
+    And(a=a[1],b=b[1],out=or4);
+    Or(a=or3,b=or4,out=carry1);
+    
+    Xor(a=a[2],b=b[2],out=axorb2);
+    Xor(a=axorb2,b=carry1,out=out[2]);
+    And(a=axorb2,b=carry1,out=or5);
+    And(a=a[2],b=b[2],out=or6);
+    Or(a=or5,b=or6,out=carry2);
+    
+    Xor(a=a[3],b=b[3],out=axorb3);
+    Xor(a=axorb3,b=carry2,out=out[3]);
+    And(a=axorb3,b=carry2,out=or7);
+    And(a=a[3],b=b[3],out=or8);
+    Or(a=or7,b=or8,out=carry3);
+    
+    Xor(a=a[4],b=b[4],out=axorb4);
+    Xor(a=axorb4,b=carry3,out=out[4]);
+    And(a=axorb4,b=carry3,out=or9);
+    And(a=a[4],b=b[4],out=or10);
+    Or(a=or9,b=or10,out=carry4);
+    
+    Xor(a=a[5],b=b[5],out=axorb5);
+    Xor(a=axorb5,b=carry4,out=out[5]);
+    And(a=axorb5,b=carry4,out=or11);
+    And(a=a[5],b=b[5],out=or12);
+    Or(a=or11,b=or12,out=carry5);
+    
+    Xor(a=a[6],b=b[6],out=axorb6);
+    Xor(a=axorb6,b=carry5,out=out[6]);
+    And(a=axorb6,b=carry5,out=or13);
+    And(a=a[6],b=b[6],out=or14);
+    Or(a=or13,b=or14,out=carry6);
+    
+    Xor(a=a[7],b=b[7],out=axorb7);
+    Xor(a=axorb7,b=carry6,out=out[7]);
+    And(a=axorb7,b=carry6,out=or15);
+    And(a=a[7],b=b[7],out=or16);
+    Or(a=or15,b=or16,out=carry7);
+    
+    Xor(a=a[8],b=b[8],out=axorb8);
+    Xor(a=axorb8,b=carry7,out=out[8]);
+    And(a=axorb8,b=carry7,out=or17);
+    And(a=a[8],b=b[8],out=or18);
+    Or(a=or17,b=or18,out=carry8);
+    
+    Xor(a=a[9],b=b[9],out=axorb9);
+    Xor(a=axorb9,b=carry8,out=out[9]);
+    And(a=axorb9,b=carry8,out=or19);
+    And(a=a[9],b=b[9],out=or20);
+    Or(a=or19,b=or20,out=carry9);
+    
+    Xor(a=a[10],b=b[10],out=axorb10);
+    Xor(a=axorb10,b=carry9,out=out[10]);
+    And(a=axorb10,b=carry9,out=or21);
+    And(a=a[10],b=b[10],out=or22);
+    Or(a=or21,b=or22,out=carry10);
+    
+    Xor(a=a[11],b=b[11],out=axorb11);
+    Xor(a=axorb11,b=carry10,out=out[11]);
+    And(a=axorb11,b=carry10,out=or23);
+    And(a=a[11],b=b[11],out=or24);
+    Or(a=or23,b=or24,out=carry11);
+    
+    Xor(a=a[12],b=b[12],out=axorb12);
+    Xor(a=axorb12,b=carry11,out=out[12]);
+    And(a=axorb12,b=carry11,out=or25);
+    And(a=a[12],b=b[12],out=or26);
+    Or(a=or25,b=or26,out=carry12);
+    
+    Xor(a=a[13],b=b[13],out=axorb13);
+    Xor(a=axorb13,b=carry12,out=out[13]);
+    And(a=axorb13,b=carry12,out=or27);
+    And(a=a[13],b=b[13],out=or28);
+    Or(a=or27,b=or28,out=carry13);
+    
+    Xor(a=a[14],b=b[14],out=axorb14);
+    Xor(a=axorb14,b=carry13,out=out[14]);
+    And(a=axorb14,b=carry13,out=or29);
+    And(a=a[14],b=b[14],out=or30);
+    Or(a=or29,b=or30,out=carry14);
+    
+    Xor(a=a[15],b=b[15],out=axorb15);
+    Xor(a=axorb15,b=carry14,out=out[15]);
+    	
+}
+
